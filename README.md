@@ -21,7 +21,7 @@ See a rendered example in [`docs/example-model/`](docs/example-model/), built fr
 
 ## Why I built it
 
-After 25+ years in OT networking I have drawn the same Purdue diagram a hundred times. The segmentation is never the hard part — capturing the *allowed flows* and then proving the firewall matches them is. This kit makes the allowed-flow list the single source of truth: the diagram, the firewall rules and the FR5 evidence all fall out of the same YAML, so when a flow changes you regenerate everything instead of editing three documents and hoping they agree.
+After 5+ years in OT networking I have drawn the same Purdue diagram a hundred times. The segmentation is never the hard part — capturing the *allowed flows* and then proving the firewall matches them is. This kit makes the allowed-flow list the single source of truth: the diagram, the firewall rules and the FR5 evidence all fall out of the same YAML, so when a flow changes you regenerate everything instead of editing three documents and hoping they agree.
 
 ## Install
 
