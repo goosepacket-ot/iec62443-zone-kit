@@ -1,0 +1,31 @@
+graph TD
+  subgraph z_Enterprise__L4_["Enterprise (L4)  (SL-T 2)"]
+    z_Enterprise__L4__z_ERP["ERP<br/>10.20.0.10"]
+    z_Enterprise__L4__z_Business_Client["Business-Client<br/>10.20.0.50"]
+  end
+  subgraph z_Industrial_DMZ["Industrial DMZ  (SL-T 2)"]
+    z_Industrial_DMZ_z_DMZ_Historian_Mirror["DMZ-Historian-Mirror<br/>10.10.3.10"]
+    z_Industrial_DMZ_z_Patch_Server["Patch-Server<br/>10.10.3.20"]
+  end
+  subgraph z_Operations__L3_["Operations (L3)  (SL-T 3)"]
+    z_Operations__L3__z_Historian["Historian<br/>10.10.2.10"]
+    z_Operations__L3__z_OT_AD["OT-AD<br/>10.10.2.15"]
+  end
+  subgraph z_Process__L0_L1_["Process (L0-L1)  (SL-T 3)"]
+    z_Process__L0_L1__z_Field_IO_1["Field-IO-1<br/>10.10.0.11"]
+    z_Process__L0_L1__z_Field_IO_2["Field-IO-2<br/>10.10.0.12"]
+    z_Process__L0_L1__z_RTU_Substation["RTU-Substation<br/>10.10.0.31"]
+  end
+  subgraph z_Safety["Safety  (SL-T 4)"]
+    z_Safety_z_Safety_PLC["Safety-PLC<br/>10.10.0.20"]
+  end
+  subgraph z_Supervisory__L2_["Supervisory (L2)  (SL-T 3)"]
+    z_Supervisory__L2__z_SCADA_Server["SCADA-Server<br/>10.10.1.10"]
+    z_Supervisory__L2__z_HMI_1["HMI-1<br/>10.10.1.21"]
+    z_Supervisory__L2__z_Eng_Workstation["Eng-Workstation<br/>10.10.1.30"]
+  end
+  z_Supervisory__L2_ ==>|"IEC-104, Modbus/TCP, S7comm"| z_Process__L0_L1_
+  z_Safety ==>|"Modbus/TCP"| z_Supervisory__L2_
+  z_Supervisory__L2_ ==>|"OPCUA-Sign"| z_Operations__L3_
+  z_Operations__L3_ ==>|"HTTPS, OPCUA-Sign"| z_Industrial_DMZ
+  z_Enterprise__L4_ ==>|"HTTPS"| z_Industrial_DMZ

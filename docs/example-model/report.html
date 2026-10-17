@@ -1,0 +1,56 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>IEC 62443 zone & conduit model</title>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11.4.1/dist/mermaid.min.js"></script>
+<style>
+:root{--bg:#f6f7f9;--fg:#1c2833;--card:#fff;--line:#e3e6ea;--mut:#5d6d7e}
+@media (prefers-color-scheme:dark){:root{--bg:#12161b;--fg:#e6e9ed;--card:#1b2128;--line:#2c343d;--mut:#9aa5b1}}
+body{margin:0;font:14px/1.45 system-ui,Segoe UI,sans-serif;background:var(--bg);color:var(--fg)}
+main{max-width:1100px;margin:auto;padding:24px 16px}h1{font-size:22px}h2{margin-top:30px;font-size:17px}
+table{border-collapse:collapse;width:100%;background:var(--card)}td,th{border-bottom:1px solid var(--line);padding:6px 8px;text-align:left}
+th{color:var(--mut)}.n{text-align:right}.wrap{overflow-x:auto}
+.pill{color:#fff;border-radius:10px;padding:1px 9px;font-size:12px;margin-left:8px}
+.fr{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:10px 14px;margin:8px 0}
+.frh{display:flex;justify-content:space-between;align-items:center}.sub{color:var(--mut);font-size:13px;margin:4px 0}
+.mermaid{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:12px}
+.note{color:var(--mut);font-size:12px;margin-top:20px}
+</style></head><body><main>
+<h1>IEC 62443 zone &amp; conduit model — assets.csv</h1>
+<p>6 zones · 5 conduits · 10 defined flows</p>
+<h2>Zones &amp; suggested SL-T</h2><div class=wrap><table><tr><th>Zone</th><th>Purdue level</th><th>Assets</th><th>Criticality</th><th>SL-T</th></tr><tr><td>Enterprise (L4)</td><td>4</td><td class=n>2</td><td>medium</td><td class=n><b>2</b></td></tr><tr><td>Industrial DMZ</td><td>3.5</td><td class=n>2</td><td>medium</td><td class=n><b>2</b></td></tr><tr><td>Operations (L3)</td><td>3</td><td class=n>2</td><td>high</td><td class=n><b>3</b></td></tr><tr><td>Process (L0-L1)</td><td>1</td><td class=n>3</td><td>high</td><td class=n><b>3</b></td></tr><tr><td>Safety</td><td>1</td><td class=n>1</td><td>safety</td><td class=n><b>4</b></td></tr><tr><td>Supervisory (L2)</td><td>2</td><td class=n>3</td><td>high</td><td class=n><b>3</b></td></tr></table></div>
+<p class=note>SL-T is a starting suggestion from asset criticality — confirm with an IEC 62443-3-2 risk assessment.</p>
+<h2>Zone &amp; conduit diagram</h2><div class="mermaid">graph TD
+  subgraph z_Enterprise__L4_[&quot;Enterprise (L4)  (SL-T 2)&quot;]
+    z_Enterprise__L4__z_ERP[&quot;ERP&lt;br/&gt;10.20.0.10&quot;]
+    z_Enterprise__L4__z_Business_Client[&quot;Business-Client&lt;br/&gt;10.20.0.50&quot;]
+  end
+  subgraph z_Industrial_DMZ[&quot;Industrial DMZ  (SL-T 2)&quot;]
+    z_Industrial_DMZ_z_DMZ_Historian_Mirror[&quot;DMZ-Historian-Mirror&lt;br/&gt;10.10.3.10&quot;]
+    z_Industrial_DMZ_z_Patch_Server[&quot;Patch-Server&lt;br/&gt;10.10.3.20&quot;]
+  end
+  subgraph z_Operations__L3_[&quot;Operations (L3)  (SL-T 3)&quot;]
+    z_Operations__L3__z_Historian[&quot;Historian&lt;br/&gt;10.10.2.10&quot;]
+    z_Operations__L3__z_OT_AD[&quot;OT-AD&lt;br/&gt;10.10.2.15&quot;]
+  end
+  subgraph z_Process__L0_L1_[&quot;Process (L0-L1)  (SL-T 3)&quot;]
+    z_Process__L0_L1__z_Field_IO_1[&quot;Field-IO-1&lt;br/&gt;10.10.0.11&quot;]
+    z_Process__L0_L1__z_Field_IO_2[&quot;Field-IO-2&lt;br/&gt;10.10.0.12&quot;]
+    z_Process__L0_L1__z_RTU_Substation[&quot;RTU-Substation&lt;br/&gt;10.10.0.31&quot;]
+  end
+  subgraph z_Safety[&quot;Safety  (SL-T 4)&quot;]
+    z_Safety_z_Safety_PLC[&quot;Safety-PLC&lt;br/&gt;10.10.0.20&quot;]
+  end
+  subgraph z_Supervisory__L2_[&quot;Supervisory (L2)  (SL-T 3)&quot;]
+    z_Supervisory__L2__z_SCADA_Server[&quot;SCADA-Server&lt;br/&gt;10.10.1.10&quot;]
+    z_Supervisory__L2__z_HMI_1[&quot;HMI-1&lt;br/&gt;10.10.1.21&quot;]
+    z_Supervisory__L2__z_Eng_Workstation[&quot;Eng-Workstation&lt;br/&gt;10.10.1.30&quot;]
+  end
+  z_Supervisory__L2_ ==&gt;|&quot;IEC-104, Modbus/TCP, S7comm&quot;| z_Process__L0_L1_
+  z_Safety ==&gt;|&quot;Modbus/TCP&quot;| z_Supervisory__L2_
+  z_Supervisory__L2_ ==&gt;|&quot;OPCUA-Sign&quot;| z_Operations__L3_
+  z_Operations__L3_ ==&gt;|&quot;HTTPS, OPCUA-Sign&quot;| z_Industrial_DMZ
+  z_Enterprise__L4_ ==&gt;|&quot;HTTPS&quot;| z_Industrial_DMZ</div>
+<h2>Firewall rule matrix</h2><div class=wrap><table><tr><th>Conduit</th><th>Action</th><th>Source</th><th>Dest</th><th>Protocol</th><th>Port</th><th>Purpose</th></tr><tr><td>Supervisory (L2) &lt;-&gt; Process (L0-L1)</td><td><b style='color:#1e8449'>ALLOW</b></td><td>Supervisory (L2)</td><td>Process (L0-L1)</td><td>Modbus/TCP</td><td>502</td><td>Poll and command line 1 PLC</td></tr><tr><td>Supervisory (L2) &lt;-&gt; Process (L0-L1)</td><td><b style='color:#1e8449'>ALLOW</b></td><td>Supervisory (L2)</td><td>Process (L0-L1)</td><td>Modbus/TCP</td><td>502</td><td>Poll and command line 2 PLC</td></tr><tr><td>Supervisory (L2) &lt;-&gt; Process (L0-L1)</td><td><b style='color:#1e8449'>ALLOW</b></td><td>Supervisory (L2)</td><td>Process (L0-L1)</td><td>IEC-104</td><td>2404</td><td>Substation telemetry and control</td></tr><tr><td>Supervisory (L2) &lt;-&gt; Process (L0-L1)</td><td><b style='color:#1e8449'>ALLOW</b></td><td>Supervisory (L2)</td><td>Process (L0-L1)</td><td>S7comm</td><td>102</td><td>PLC programming (maintenance window only)</td></tr><tr><td>Safety &lt;-&gt; Supervisory (L2)</td><td><b style='color:#1e8449'>ALLOW</b></td><td>Safety</td><td>Supervisory (L2)</td><td>Modbus/TCP</td><td>502</td><td>Safety status to SCADA (read-only)</td></tr><tr><td>Supervisory (L2) &lt;-&gt; Operations (L3)</td><td><b style='color:#1e8449'>ALLOW</b></td><td>Supervisory (L2)</td><td>Operations (L3)</td><td>OPCUA-Sign</td><td>4840</td><td>Historise process data</td></tr><tr><td>Operations (L3) &lt;-&gt; Industrial DMZ</td><td><b style='color:#1e8449'>ALLOW</b></td><td>Operations (L3)</td><td>Industrial DMZ</td><td>OPCUA-Sign</td><td>4840</td><td>One-way replication OT -&gt; DMZ</td></tr><tr><td>Operations (L3) &lt;-&gt; Industrial DMZ</td><td><b style='color:#1e8449'>ALLOW</b></td><td>Operations (L3)</td><td>Industrial DMZ</td><td>HTTPS</td><td>443</td><td>Patch/AV distribution into OT via DMZ relay</td></tr><tr><td>Enterprise (L4) &lt;-&gt; Industrial DMZ</td><td><b style='color:#1e8449'>ALLOW</b></td><td>Enterprise (L4)</td><td>Industrial DMZ</td><td>HTTPS</td><td>443</td><td>Enterprise reads reports from the DMZ replica</td></tr><tr><td>Enterprise (L4) &lt;-&gt; Industrial DMZ</td><td><b style='color:#1e8449'>ALLOW</b></td><td>Enterprise (L4)</td><td>Industrial DMZ</td><td>HTTPS</td><td>443</td><td>Pull updates from enterprise into the DMZ</td></tr><tr><td>*</td><td><b style='color:#c0392b'>DENY</b></td><td>any</td><td>any</td><td>any</td><td>any</td><td>Default deny (implicit, logged)</td></tr></table></div>
+<h2>Foundational requirements (IEC 62443-3-3)</h2><div class=fr><div class=frh><b>FR1 — Identification &amp; authentication control</b><span class=pill style='background:#2874a6'>review</span></div><div class=sub>Every human and device on the zone is identified and authenticated before it can act.</div><div>Confirm device/user authentication on each zone (no shared accounts, no default credentials, SNMPv3 not v1/v2c).</div></div><div class=fr><div class=frh><b>FR2 — Use control</b><span class=pill style='background:#2874a6'>review</span></div><div class=sub>Authenticated users/devices are restricted to the actions (read / write / control) they are permitted.</div><div>Confirm write/control is allow-listed per source in the conduit rules (e.g. only the SCADA zone may write to controllers).</div></div><div class=fr><div class=frh><b>FR3 — System integrity</b><span class=pill style='background:#2874a6'>review</span></div><div class=sub>Integrity of data and of the control logic is protected in transit and at rest.</div><div>Confirm integrity controls on control logic and GOOSE/SV where applicable (IEC 62351), and change management on PLC programs.</div></div><div class=fr><div class=frh><b>FR4 — Data confidentiality</b><span class=pill style='background:#d68910'>partial</span></div><div class=sub>Information at rest and in transit is protected from disclosure where required.</div><div>Some flows use encrypted transports.</div></div><div class=fr><div class=frh><b>FR5 — Restricted data flow</b><span class=pill style='background:#d68910'>partial</span></div><div class=sub>The network is segmented into zones and conduits; only the approved flows cross them.</div><div>6 zones and 5 conduits defined; confirm the firewall enforces exactly these flows with a default-deny.</div></div><div class=fr><div class=frh><b>FR6 — Timely response to events</b><span class=pill style='background:#2874a6'>review</span></div><div class=sub>Security events are detected, logged and responded to.</div><div>Confirm logging/monitoring exists at each conduit (firewall logs, OT IDS) and is reviewed.</div></div><div class=fr><div class=frh><b>FR7 — Resource availability</b><span class=pill style='background:#2874a6'>review</span></div><div class=sub>The control system remains available under load, fault and attack.</div><div>Confirm redundancy / DoS resistance appropriate to the highest SL-T zone.</div></div>
+<p class=note>Generated by iec62443-zone-kit — a working model to drive an assessment, not a certification.</p>
+<script>mermaid.initialize({startOnLoad:true,theme:(matchMedia('(prefers-color-scheme:dark)').matches?'dark':'default')});</script>
+</main></body></html>

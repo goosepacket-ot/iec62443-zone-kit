@@ -1,0 +1,41 @@
+digraph zones {
+  rankdir=TB;
+  node [shape=box, style="rounded,filled", fillcolor="#eef3f8", fontname="Helvetica"];
+  graph [fontname="Helvetica"]; edge [fontname="Helvetica", penwidth=2];
+  subgraph cluster_z_Enterprise__L4_ {
+    label="Enterprise (L4)  (SL-T 2)"; style="rounded"; color="#4a6fa5";
+    "ERP" [label="ERP\n10.20.0.10"];
+    "Business-Client" [label="Business-Client\n10.20.0.50"];
+  }
+  subgraph cluster_z_Industrial_DMZ {
+    label="Industrial DMZ  (SL-T 2)"; style="rounded"; color="#4a6fa5";
+    "DMZ-Historian-Mirror" [label="DMZ-Historian-Mirror\n10.10.3.10"];
+    "Patch-Server" [label="Patch-Server\n10.10.3.20"];
+  }
+  subgraph cluster_z_Operations__L3_ {
+    label="Operations (L3)  (SL-T 3)"; style="rounded"; color="#4a6fa5";
+    "Historian" [label="Historian\n10.10.2.10"];
+    "OT-AD" [label="OT-AD\n10.10.2.15"];
+  }
+  subgraph cluster_z_Process__L0_L1_ {
+    label="Process (L0-L1)  (SL-T 3)"; style="rounded"; color="#4a6fa5";
+    "Field-IO-1" [label="Field-IO-1\n10.10.0.11"];
+    "Field-IO-2" [label="Field-IO-2\n10.10.0.12"];
+    "RTU-Substation" [label="RTU-Substation\n10.10.0.31"];
+  }
+  subgraph cluster_z_Safety {
+    label="Safety  (SL-T 4)"; style="rounded"; color="#4a6fa5";
+    "Safety-PLC" [label="Safety-PLC\n10.10.0.20"];
+  }
+  subgraph cluster_z_Supervisory__L2_ {
+    label="Supervisory (L2)  (SL-T 3)"; style="rounded"; color="#4a6fa5";
+    "SCADA-Server" [label="SCADA-Server\n10.10.1.10"];
+    "HMI-1" [label="HMI-1\n10.10.1.21"];
+    "Eng-Workstation" [label="Eng-Workstation\n10.10.1.30"];
+  }
+  "SCADA-Server" -> "Field-IO-1" [label="IEC-104, Modbus/TCP, S7comm", color="#c0392b"];
+  "Safety-PLC" -> "SCADA-Server" [label="Modbus/TCP", color="#c0392b"];
+  "SCADA-Server" -> "Historian" [label="OPCUA-Sign", color="#c0392b"];
+  "Historian" -> "DMZ-Historian-Mirror" [label="HTTPS, OPCUA-Sign", color="#c0392b"];
+  "ERP" -> "DMZ-Historian-Mirror" [label="HTTPS", color="#c0392b"];
+}

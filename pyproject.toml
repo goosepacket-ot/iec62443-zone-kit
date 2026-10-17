@@ -1,0 +1,38 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "iec62443-zone-kit"
+version = "0.1.0"
+description = "Build an IEC 62443 zone & conduit model, firewall rule matrix and FR checklist from an asset list and an allowed-flow baseline."
+readme = "README.md"
+requires-python = ">=3.9"
+license = { text = "MIT" }
+authors = [{ name = "Laxmikant" }]
+keywords = ["IEC-62443", "OT", "ICS", "zones", "conduits", "Purdue", "segmentation", "network-security"]
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Environment :: Console",
+  "Intended Audience :: Information Technology",
+  "License :: OSI Approved :: MIT License",
+  "Programming Language :: Python :: 3",
+  "Topic :: Security",
+]
+dependencies = ["PyYAML>=5.4"]
+
+[project.optional-dependencies]
+dev = ["pytest>=7"]
+
+[project.urls]
+Homepage = "https://github.com/goosepacket/iec62443-zone-kit"
+Issues = "https://github.com/goosepacket/iec62443-zone-kit/issues"
+
+[project.scripts]
+zonekit = "zonekit.cli:main"
+
+[tool.setuptools]
+packages = ["zonekit"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

@@ -1,0 +1,12 @@
+conduit,action,source_zone,dest_zone,protocol,port,direction,purpose
+Supervisory (L2) <-> Process (L0-L1),ALLOW,Supervisory (L2),Process (L0-L1),Modbus/TCP,502,bidirectional,Poll and command line 1 PLC
+Supervisory (L2) <-> Process (L0-L1),ALLOW,Supervisory (L2),Process (L0-L1),Modbus/TCP,502,bidirectional,Poll and command line 2 PLC
+Supervisory (L2) <-> Process (L0-L1),ALLOW,Supervisory (L2),Process (L0-L1),IEC-104,2404,bidirectional,Substation telemetry and control
+Supervisory (L2) <-> Process (L0-L1),ALLOW,Supervisory (L2),Process (L0-L1),S7comm,102,bidirectional,PLC programming (maintenance window only)
+Safety <-> Supervisory (L2),ALLOW,Safety,Supervisory (L2),Modbus/TCP,502,unidirectional,Safety status to SCADA (read-only)
+Supervisory (L2) <-> Operations (L3),ALLOW,Supervisory (L2),Operations (L3),OPCUA-Sign,4840,unidirectional,Historise process data
+Operations (L3) <-> Industrial DMZ,ALLOW,Operations (L3),Industrial DMZ,OPCUA-Sign,4840,unidirectional,One-way replication OT -> DMZ
+Operations (L3) <-> Industrial DMZ,ALLOW,Operations (L3),Industrial DMZ,HTTPS,443,unidirectional,Patch/AV distribution into OT via DMZ relay
+Enterprise (L4) <-> Industrial DMZ,ALLOW,Enterprise (L4),Industrial DMZ,HTTPS,443,unidirectional,Enterprise reads reports from the DMZ replica
+Enterprise (L4) <-> Industrial DMZ,ALLOW,Enterprise (L4),Industrial DMZ,HTTPS,443,unidirectional,Pull updates from enterprise into the DMZ
+*,DENY,any,any,any,any,-,"Default deny (implicit, logged)"

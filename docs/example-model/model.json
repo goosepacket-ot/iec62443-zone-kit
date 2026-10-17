@@ -1,0 +1,483 @@
+{
+  "source": "examples/assets.csv",
+  "zones": [
+    {
+      "name": "Process (L0-L1)",
+      "level": "1",
+      "sl_t": 3,
+      "assets": [
+        {
+          "name": "Field-IO-1",
+          "ip": "10.10.0.11",
+          "zone": "Process (L0-L1)",
+          "level": "1",
+          "criticality": "high",
+          "type": "PLC",
+          "notes": "Line 1 PLC"
+        },
+        {
+          "name": "Field-IO-2",
+          "ip": "10.10.0.12",
+          "zone": "Process (L0-L1)",
+          "level": "1",
+          "criticality": "high",
+          "type": "PLC",
+          "notes": "Line 2 PLC"
+        },
+        {
+          "name": "RTU-Substation",
+          "ip": "10.10.0.31",
+          "zone": "Process (L0-L1)",
+          "level": "1",
+          "criticality": "high",
+          "type": "RTU",
+          "notes": "IEC 104 RTU"
+        }
+      ]
+    },
+    {
+      "name": "Safety",
+      "level": "1",
+      "sl_t": 4,
+      "assets": [
+        {
+          "name": "Safety-PLC",
+          "ip": "10.10.0.20",
+          "zone": "Safety",
+          "level": "1",
+          "criticality": "safety",
+          "type": "Safety PLC",
+          "notes": "SIS - keep separate"
+        }
+      ]
+    },
+    {
+      "name": "Supervisory (L2)",
+      "level": "2",
+      "sl_t": 3,
+      "assets": [
+        {
+          "name": "SCADA-Server",
+          "ip": "10.10.1.10",
+          "zone": "Supervisory (L2)",
+          "level": "2",
+          "criticality": "high",
+          "type": "SCADA",
+          "notes": "Primary SCADA"
+        },
+        {
+          "name": "HMI-1",
+          "ip": "10.10.1.21",
+          "zone": "Supervisory (L2)",
+          "level": "2",
+          "criticality": "medium",
+          "type": "HMI",
+          "notes": "Operator station"
+        },
+        {
+          "name": "Eng-Workstation",
+          "ip": "10.10.1.30",
+          "zone": "Supervisory (L2)",
+          "level": "2",
+          "criticality": "high",
+          "type": "Engineering",
+          "notes": "PLC programming"
+        }
+      ]
+    },
+    {
+      "name": "Operations (L3)",
+      "level": "3",
+      "sl_t": 3,
+      "assets": [
+        {
+          "name": "Historian",
+          "ip": "10.10.2.10",
+          "zone": "Operations (L3)",
+          "level": "3",
+          "criticality": "medium",
+          "type": "Historian",
+          "notes": "Plant historian"
+        },
+        {
+          "name": "OT-AD",
+          "ip": "10.10.2.15",
+          "zone": "Operations (L3)",
+          "level": "3",
+          "criticality": "high",
+          "type": "Server",
+          "notes": "OT domain controller"
+        }
+      ]
+    },
+    {
+      "name": "Industrial DMZ",
+      "level": "3.5",
+      "sl_t": 2,
+      "assets": [
+        {
+          "name": "DMZ-Historian-Mirror",
+          "ip": "10.10.3.10",
+          "zone": "Industrial DMZ",
+          "level": "3.5",
+          "criticality": "medium",
+          "type": "Server",
+          "notes": "Read-only replica for enterprise"
+        },
+        {
+          "name": "Patch-Server",
+          "ip": "10.10.3.20",
+          "zone": "Industrial DMZ",
+          "level": "3.5",
+          "criticality": "medium",
+          "type": "Server",
+          "notes": "WSUS/AV relay"
+        }
+      ]
+    },
+    {
+      "name": "Enterprise (L4)",
+      "level": "4",
+      "sl_t": 2,
+      "assets": [
+        {
+          "name": "ERP",
+          "ip": "10.20.0.10",
+          "zone": "Enterprise (L4)",
+          "level": "4",
+          "criticality": "medium",
+          "type": "Server",
+          "notes": "Business ERP"
+        },
+        {
+          "name": "Business-Client",
+          "ip": "10.20.0.50",
+          "zone": "Enterprise (L4)",
+          "level": "4",
+          "criticality": "low",
+          "type": "Workstation",
+          "notes": "Office PC"
+        }
+      ]
+    }
+  ],
+  "conduits": [
+    {
+      "src": "Supervisory (L2)",
+      "dst": "Process (L0-L1)",
+      "flows": [
+        {
+          "src": "SCADA-Server",
+          "dst": "Field-IO-1",
+          "protocol": "Modbus/TCP",
+          "port": "502",
+          "purpose": "Poll and command line 1 PLC",
+          "direction": "bidirectional"
+        },
+        {
+          "src": "SCADA-Server",
+          "dst": "Field-IO-2",
+          "protocol": "Modbus/TCP",
+          "port": "502",
+          "purpose": "Poll and command line 2 PLC",
+          "direction": "bidirectional"
+        },
+        {
+          "src": "SCADA-Server",
+          "dst": "RTU-Substation",
+          "protocol": "IEC-104",
+          "port": "2404",
+          "purpose": "Substation telemetry and control",
+          "direction": "bidirectional"
+        },
+        {
+          "src": "Eng-Workstation",
+          "dst": "Field-IO-1",
+          "protocol": "S7comm",
+          "port": "102",
+          "purpose": "PLC programming (maintenance window only)",
+          "direction": "bidirectional"
+        }
+      ]
+    },
+    {
+      "src": "Safety",
+      "dst": "Supervisory (L2)",
+      "flows": [
+        {
+          "src": "Safety-PLC",
+          "dst": "SCADA-Server",
+          "protocol": "Modbus/TCP",
+          "port": "502",
+          "purpose": "Safety status to SCADA (read-only)",
+          "direction": "unidirectional"
+        }
+      ]
+    },
+    {
+      "src": "Supervisory (L2)",
+      "dst": "Operations (L3)",
+      "flows": [
+        {
+          "src": "SCADA-Server",
+          "dst": "Historian",
+          "protocol": "OPCUA-Sign",
+          "port": "4840",
+          "purpose": "Historise process data",
+          "direction": "unidirectional"
+        }
+      ]
+    },
+    {
+      "src": "Operations (L3)",
+      "dst": "Industrial DMZ",
+      "flows": [
+        {
+          "src": "Historian",
+          "dst": "DMZ-Historian-Mirror",
+          "protocol": "OPCUA-Sign",
+          "port": "4840",
+          "purpose": "One-way replication OT -> DMZ",
+          "direction": "unidirectional"
+        },
+        {
+          "src": "Patch-Server",
+          "dst": "OT-AD",
+          "protocol": "HTTPS",
+          "port": "443",
+          "purpose": "Patch/AV distribution into OT via DMZ relay",
+          "direction": "unidirectional"
+        }
+      ]
+    },
+    {
+      "src": "Enterprise (L4)",
+      "dst": "Industrial DMZ",
+      "flows": [
+        {
+          "src": "Business-Client",
+          "dst": "DMZ-Historian-Mirror",
+          "protocol": "HTTPS",
+          "port": "443",
+          "purpose": "Enterprise reads reports from the DMZ replica",
+          "direction": "unidirectional"
+        },
+        {
+          "src": "ERP",
+          "dst": "Patch-Server",
+          "protocol": "HTTPS",
+          "port": "443",
+          "purpose": "Pull updates from enterprise into the DMZ",
+          "direction": "unidirectional"
+        }
+      ]
+    }
+  ],
+  "firewall_rules": [
+    {
+      "conduit": "Supervisory (L2) <-> Process (L0-L1)",
+      "action": "ALLOW",
+      "source_zone": "Supervisory (L2)",
+      "dest_zone": "Process (L0-L1)",
+      "protocol": "Modbus/TCP",
+      "port": "502",
+      "direction": "bidirectional",
+      "purpose": "Poll and command line 1 PLC"
+    },
+    {
+      "conduit": "Supervisory (L2) <-> Process (L0-L1)",
+      "action": "ALLOW",
+      "source_zone": "Supervisory (L2)",
+      "dest_zone": "Process (L0-L1)",
+      "protocol": "Modbus/TCP",
+      "port": "502",
+      "direction": "bidirectional",
+      "purpose": "Poll and command line 2 PLC"
+    },
+    {
+      "conduit": "Supervisory (L2) <-> Process (L0-L1)",
+      "action": "ALLOW",
+      "source_zone": "Supervisory (L2)",
+      "dest_zone": "Process (L0-L1)",
+      "protocol": "IEC-104",
+      "port": "2404",
+      "direction": "bidirectional",
+      "purpose": "Substation telemetry and control"
+    },
+    {
+      "conduit": "Supervisory (L2) <-> Process (L0-L1)",
+      "action": "ALLOW",
+      "source_zone": "Supervisory (L2)",
+      "dest_zone": "Process (L0-L1)",
+      "protocol": "S7comm",
+      "port": "102",
+      "direction": "bidirectional",
+      "purpose": "PLC programming (maintenance window only)"
+    },
+    {
+      "conduit": "Safety <-> Supervisory (L2)",
+      "action": "ALLOW",
+      "source_zone": "Safety",
+      "dest_zone": "Supervisory (L2)",
+      "protocol": "Modbus/TCP",
+      "port": "502",
+      "direction": "unidirectional",
+      "purpose": "Safety status to SCADA (read-only)"
+    },
+    {
+      "conduit": "Supervisory (L2) <-> Operations (L3)",
+      "action": "ALLOW",
+      "source_zone": "Supervisory (L2)",
+      "dest_zone": "Operations (L3)",
+      "protocol": "OPCUA-Sign",
+      "port": "4840",
+      "direction": "unidirectional",
+      "purpose": "Historise process data"
+    },
+    {
+      "conduit": "Operations (L3) <-> Industrial DMZ",
+      "action": "ALLOW",
+      "source_zone": "Operations (L3)",
+      "dest_zone": "Industrial DMZ",
+      "protocol": "OPCUA-Sign",
+      "port": "4840",
+      "direction": "unidirectional",
+      "purpose": "One-way replication OT -> DMZ"
+    },
+    {
+      "conduit": "Operations (L3) <-> Industrial DMZ",
+      "action": "ALLOW",
+      "source_zone": "Operations (L3)",
+      "dest_zone": "Industrial DMZ",
+      "protocol": "HTTPS",
+      "port": "443",
+      "direction": "unidirectional",
+      "purpose": "Patch/AV distribution into OT via DMZ relay"
+    },
+    {
+      "conduit": "Enterprise (L4) <-> Industrial DMZ",
+      "action": "ALLOW",
+      "source_zone": "Enterprise (L4)",
+      "dest_zone": "Industrial DMZ",
+      "protocol": "HTTPS",
+      "port": "443",
+      "direction": "unidirectional",
+      "purpose": "Enterprise reads reports from the DMZ replica"
+    },
+    {
+      "conduit": "Enterprise (L4) <-> Industrial DMZ",
+      "action": "ALLOW",
+      "source_zone": "Enterprise (L4)",
+      "dest_zone": "Industrial DMZ",
+      "protocol": "HTTPS",
+      "port": "443",
+      "direction": "unidirectional",
+      "purpose": "Pull updates from enterprise into the DMZ"
+    },
+    {
+      "conduit": "*",
+      "action": "DENY",
+      "source_zone": "any",
+      "dest_zone": "any",
+      "protocol": "any",
+      "port": "any",
+      "direction": "-",
+      "purpose": "Default deny (implicit, logged)"
+    }
+  ],
+  "assessment": [
+    {
+      "fr": "FR1",
+      "title": "Identification & authentication control",
+      "description": "Every human and device on the zone is identified and authenticated before it can act.",
+      "status": "review",
+      "note": "Confirm device/user authentication on each zone (no shared accounts, no default credentials, SNMPv3 not v1/v2c)."
+    },
+    {
+      "fr": "FR2",
+      "title": "Use control",
+      "description": "Authenticated users/devices are restricted to the actions (read / write / control) they are permitted.",
+      "status": "review",
+      "note": "Confirm write/control is allow-listed per source in the conduit rules (e.g. only the SCADA zone may write to controllers)."
+    },
+    {
+      "fr": "FR3",
+      "title": "System integrity",
+      "description": "Integrity of data and of the control logic is protected in transit and at rest.",
+      "status": "review",
+      "note": "Confirm integrity controls on control logic and GOOSE/SV where applicable (IEC 62351), and change management on PLC programs."
+    },
+    {
+      "fr": "FR4",
+      "title": "Data confidentiality",
+      "description": "Information at rest and in transit is protected from disclosure where required.",
+      "status": "partial",
+      "note": "Some flows use encrypted transports."
+    },
+    {
+      "fr": "FR5",
+      "title": "Restricted data flow",
+      "description": "The network is segmented into zones and conduits; only the approved flows cross them.",
+      "status": "partial",
+      "note": "6 zones and 5 conduits defined; confirm the firewall enforces exactly these flows with a default-deny."
+    },
+    {
+      "fr": "FR6",
+      "title": "Timely response to events",
+      "description": "Security events are detected, logged and responded to.",
+      "status": "review",
+      "note": "Confirm logging/monitoring exists at each conduit (firewall logs, OT IDS) and is reviewed."
+    },
+    {
+      "fr": "FR7",
+      "title": "Resource availability",
+      "description": "The control system remains available under load, fault and attack.",
+      "status": "review",
+      "note": "Confirm redundancy / DoS resistance appropriate to the highest SL-T zone."
+    }
+  ],
+  "sl_summary": [
+    {
+      "zone": "Enterprise (L4)",
+      "level": "4",
+      "assets": 2,
+      "suggested_sl_t": 2,
+      "criticality": "medium"
+    },
+    {
+      "zone": "Industrial DMZ",
+      "level": "3.5",
+      "assets": 2,
+      "suggested_sl_t": 2,
+      "criticality": "medium"
+    },
+    {
+      "zone": "Operations (L3)",
+      "level": "3",
+      "assets": 2,
+      "suggested_sl_t": 3,
+      "criticality": "high"
+    },
+    {
+      "zone": "Process (L0-L1)",
+      "level": "1",
+      "assets": 3,
+      "suggested_sl_t": 3,
+      "criticality": "high"
+    },
+    {
+      "zone": "Safety",
+      "level": "1",
+      "assets": 1,
+      "suggested_sl_t": 4,
+      "criticality": "safety"
+    },
+    {
+      "zone": "Supervisory (L2)",
+      "level": "2",
+      "assets": 3,
+      "suggested_sl_t": 3,
+      "criticality": "high"
+    }
+  ]
+}

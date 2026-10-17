@@ -1,0 +1,14 @@
+name,ip,zone,level,criticality,type,notes
+Field-IO-1,10.10.0.11,Process (L0-L1),1,high,PLC,Line 1 PLC
+Field-IO-2,10.10.0.12,Process (L0-L1),1,high,PLC,Line 2 PLC
+Safety-PLC,10.10.0.20,Safety,1,safety,Safety PLC,SIS - keep separate
+RTU-Substation,10.10.0.31,Process (L0-L1),1,high,RTU,IEC 104 RTU
+SCADA-Server,10.10.1.10,Supervisory (L2),2,high,SCADA,Primary SCADA
+HMI-1,10.10.1.21,Supervisory (L2),2,medium,HMI,Operator station
+Eng-Workstation,10.10.1.30,Supervisory (L2),2,high,Engineering,PLC programming
+Historian,10.10.2.10,Operations (L3),3,medium,Historian,Plant historian
+OT-AD,10.10.2.15,Operations (L3),3,high,Server,OT domain controller
+DMZ-Historian-Mirror,10.10.3.10,Industrial DMZ,3.5,medium,Server,Read-only replica for enterprise
+Patch-Server,10.10.3.20,Industrial DMZ,3.5,medium,Server,WSUS/AV relay
+ERP,10.20.0.10,Enterprise (L4),4,medium,Server,Business ERP
+Business-Client,10.20.0.50,Enterprise (L4),4,low,Workstation,Office PC

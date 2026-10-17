@@ -1,0 +1,73 @@
+# Allowed communication baseline for the example plant.
+# Each flow names a source and destination (an asset name, an IP, or a zone name),
+# the protocol/port, its purpose, and whether it is one-way or two-way.
+# Anything not listed here is denied by the generated firewall matrix.
+
+flows:
+  # --- Supervisory controls the field (Level 2 -> Level 1) ---
+  - src: SCADA-Server
+    dst: Field-IO-1
+    protocol: Modbus/TCP
+    port: "502"
+    purpose: Poll and command line 1 PLC
+    direction: bidirectional
+  - src: SCADA-Server
+    dst: Field-IO-2
+    protocol: Modbus/TCP
+    port: "502"
+    purpose: Poll and command line 2 PLC
+    direction: bidirectional
+  - src: SCADA-Server
+    dst: RTU-Substation
+    protocol: IEC-104
+    port: "2404"
+    purpose: Substation telemetry and control
+    direction: bidirectional
+  - src: Eng-Workstation
+    dst: Field-IO-1
+    protocol: S7comm
+    port: "102"
+    purpose: PLC programming (maintenance window only)
+    direction: bidirectional
+
+  # --- Safety zone: monitoring only, no control path in ---
+  - src: Safety-PLC
+    dst: SCADA-Server
+    protocol: Modbus/TCP
+    port: "502"
+    purpose: Safety status to SCADA (read-only)
+    direction: unidirectional
+
+  # --- Operations collects from supervisory (L3 <- L2) ---
+  - src: SCADA-Server
+    dst: Historian
+    protocol: OPCUA-Sign
+    port: "4840"
+    purpose: Historise process data
+    direction: unidirectional
+
+  # --- Industrial DMZ is the only bridge to enterprise ---
+  - src: Historian
+    dst: DMZ-Historian-Mirror
+    protocol: OPCUA-Sign
+    port: "4840"
+    purpose: One-way replication OT -> DMZ
+    direction: unidirectional
+  - src: Business-Client
+    dst: DMZ-Historian-Mirror
+    protocol: HTTPS
+    port: "443"
+    purpose: Enterprise reads reports from the DMZ replica
+    direction: unidirectional
+  - src: Patch-Server
+    dst: OT-AD
+    protocol: HTTPS
+    port: "443"
+    purpose: Patch/AV distribution into OT via DMZ relay
+    direction: unidirectional
+  - src: ERP
+    dst: Patch-Server
+    protocol: HTTPS
+    port: "443"
+    purpose: Pull updates from enterprise into the DMZ
+    direction: unidirectional
